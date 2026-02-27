@@ -1,7 +1,6 @@
-
 pipeline {
   agent any
-  options { timestamps() }
+
   stages {
     stage('Checkout') {
       steps {
@@ -10,11 +9,12 @@ pipeline {
             credentialsId: 'github-pat'
       }
     }
-    stage('Verify') {
+
+    stage('Build') {
       steps {
-        sh 'git log -1 --oneline || true'
-        sh 'ls -la'
+        echo "Building..."
       }
     }
   }
 }
+
