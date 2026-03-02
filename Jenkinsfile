@@ -1,4 +1,5 @@
 pipeline {
+<<<<<<< HEAD
     agent any
 
     tools {
@@ -9,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://your-repo-url.git'
+                git branch: 'main', url: 'https://github.com/MeghanaGangavarapu/Devops-practice.git'
             }
         }
 
@@ -50,3 +51,36 @@ pipeline {
         }
     }
 }
+=======
+  agent any
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/MeghanaGangavarapu/Devops-practice.git',
+            branch: 'main',
+            credentialsId: 'github-pat'
+      }
+    }
+
+    stage('Build') {
+      steps {
+        echo "Building..."
+      }
+    }
+    
+stage('Test') {
+            steps {
+                echo "Test Success!"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "Deploy Success!"
+
+  }
+}
+  }
+}
+
+>>>>>>> d3997892ecc0c2c9ce993b31791b9c3759f0997f
