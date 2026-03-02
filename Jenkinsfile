@@ -9,7 +9,6 @@ pipeline {
 
   options {
     timestamps()
-    ansiColor('xterm')
   }
 
   stages {
@@ -43,6 +42,12 @@ pipeline {
       }
     }
   }
+}
+
+post {
+  success { echo ' Build successful' }
+  failure { echo ' Build failed' }
+}
 }
        
         
