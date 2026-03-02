@@ -1,53 +1,48 @@
 pipeline {
-    agent any
+  agent any
 
-    tools {
-        maven 'Maven-3.9'   // Ensure this matches the Maven installation name in Jenkins
-        jdk 'JDK-17'        // Ensure this matches your Jenkins JDK installation
+  environment {
+    // Adjust if your agents have a different Java installed
+    JAVA_HOME = tool name: 'JDK17', type: 'hudson.model.JDK' // OPTIONAL: only if you actually have a tool named JDK17
+    PATH = "${JAVA_HOME}/bin:${env.PATH}"
+  }
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+        sh 'chmod +x mvnw || true'
+      }
     }
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/MeghanaGangavarapu/Devops-practice.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean install -DskipTests=false'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Package Application') {
-            steps {
-                sh 'mvn package'
-            }
-        }
-
-        stage('Archive Artifacts') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            }
-        }
-    }
-
-    post {
+    stage('Build & Test') {
+      steps {
+        sh './mvnw -B -e clean verify'
+      }
+      post {
         always {
-            junit 'target/surefire-reports/*.xml'
+          junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
         }
-        success {
-            echo "Build successful!"
-        }
-        failure {
-            echo "Build failed!"
-        }
+      }
     }
+
+    stage('Package') {
+      steps {
+        sh './mvnw -B package -DskipTests'
+      }
+    }
+
+    stage('Archive Artifacts') {
+      steps {
+        archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+      }
+    }
+  }
 }
-  
+       
+        
