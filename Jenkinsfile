@@ -1,53 +1,33 @@
 pipeline {
   agent any
 
-  environment {
-    // Adjust if your agents have a different Java installed
-    JAVA_HOME = tool name: 'JDK17', type: 'hudson.model.JDK' // OPTIONAL: only if you actually have a tool named JDK17
-    PATH = "${JAVA_HOME}/bin:${env.PATH}"
+  tools {
+    maven 'Maven'
+    jdk 'Java17'
   }
-
-  options {
-    timestamps()
-  }
-
   stages {
-    stage('Checkout') {
+
+    stage('checkout Code'){
       steps {
-        checkout scm
-        sh 'chmod +x mvnw || true'
+        git 'https://github.com/MeghanaGangavarapu/Devops-practice.git'
       }
     }
 
-    stage('Build & Test') {
+    stage('Build') {
       steps {
-        sh './mvnw -B -e clean verify'
-      }
-      post {
-        always {
-          junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-        }
+        sh 'mvn clean package'
+      } 
+    }
+
+    stage('Test') {
+      steps { 
+        sh 'mvn clean package'
       }
     }
 
-    stage('Package') {
+    stage('Run') {
       steps {
-        sh './mvnw -B package -DskipTests'
-      }
-    }
-
-    stage('Archive Artifacts') {
-      steps {
-        archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+        sh 'java -jar target/*.jar'
       }
     }
   }
-}
-
-post {
-  success { echo ' Build successful' }
-  failure { echo ' Build failed' }
-}
-
-       
-        
